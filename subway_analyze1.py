@@ -57,9 +57,7 @@ def predictions(weather_turnstile):
 
     features_array_constant = sm.add_constant(features_array)
     model = sm.OLS(values_array, features_array_constant)
-    results = model.fit()
-    theta_statsmodels = results.params
-    print theta_statsmodels
+    theta_statsmodels = model.fit().params
 
     prediction = np.dot(features_array_constant, theta_statsmodels)
     print compute_r_squared(values_array, prediction)

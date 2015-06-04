@@ -2,6 +2,7 @@
 
 import numpy as np
 import pandas
+from ggplot import *
 import scipy
 import statsmodels.api as sm
 
@@ -55,14 +56,24 @@ def predictions(weather_turnstile):
     features_array = np.array(features)
     values_array = np.array(values)
 
+    # Call statsmodels
     features_array_constant = sm.add_constant(features_array)
     model = sm.OLS(values_array, features_array_constant)
     theta_statsmodels = model.fit().params
 
+    # Compute prediction
     prediction = np.dot(features_array_constant, theta_statsmodels)
+
+    # Provide some outputs
     print compute_r_squared(values_array, prediction)
     print values_array
     print prediction
+    print weather_turnstile['precipi']  
+
+    # Plot
+    plot_df = weather_turnstile[['precipi', 'ENTRIESn_hourly']]
+    plot = ggplot(plot_df, aes('precipi', 'ENTRIESn_hourly')) + geom_point()
+    print plot
 
     return prediction
 
@@ -75,7 +86,6 @@ def compute_r_squared(data, predictions):
     r_squared = 1 - np.square(data - predictions).sum() / np.square(data - data.mean()).sum()
 
     return r_squared
-
 
 if __name__ == "__main__":
     df = pandas.read_csv('data/turnstile_data_master_with_weather.csv')

@@ -44,27 +44,41 @@ runs faster.
 """
 
 def predictions(weather_turnstile):
-    #
-    # Your implementation goes here. Feel free to write additional
-    # helper functions
-    # 
+
+    # Select Features (try different features!)
+    features = weather_turnstile[['rain', 'precipi', 'Hour', 'mintempi', 'fog']]
+
+    # Values
+    values = weather_turnstile['ENTRIESn_hourly']
+
+    # Convert features and values to numpy arrays
+    features_array = np.array(features)
+    values_array = np.array(values)
+
+    features_array_constant = sm.add_constant(features_array)
+    model = sm.OLS(values_array, features_array_constant)
+    results = model.fit()
+    theta_statsmodels = results.params
+    print theta_statsmodels
+
+    prediction = np.dot(features_array_constant, theta_statsmodels)
+    print compute_r_squared(values_array, prediction)
+    print values_array
+    print prediction
+
     return prediction
 
 def compute_r_squared(data, predictions):
     '''
-    In exercise 5, we calculated the R^2 value for you. But why don't you try and
-    and calculate the R^2 value yourself.
-
     Given a list of original data points, and also a list of predicted data points,
-    write a function that will compute and return the coefficient of determination (R^2)
-    for this data.  numpy.mean() and numpy.sum() might both be useful here, but
-    not necessary.
-
-    Documentation about numpy.mean() and numpy.sum() below:
-    http://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html
-    http://docs.scipy.org/doc/numpy/reference/generated/numpy.sum.html
+    calculate the coefficient of determination (R^2) for this data.
     '''
 
     r_squared = 1 - np.square(data - predictions).sum() / np.square(data - data.mean()).sum()
 
     return r_squared
+
+
+if __name__ == "__main__":
+    df = pandas.read_csv('data/turnstile_data_master_with_weather.csv')
+    oracle = predictions(df)

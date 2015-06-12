@@ -68,7 +68,7 @@ def predictions(weather_turnstile):
     print compute_r_squared(values_array, prediction)
     print values_array
     print prediction
-    print weather_turnstile['precipi']  
+    print weather_turnstile['precipi']
 
     # Plot
     plot_df = weather_turnstile[['precipi', 'ENTRIESn_hourly']]
